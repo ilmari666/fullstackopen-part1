@@ -36,8 +36,9 @@ class Anecdotes extends React.Component {
   getVoteAnecdote(id) {
     return () => {
       this.setState(({ votes }) => {
-        ++votes[id];
-        return { votes };
+        const updatedVotes = [...votes];
+        ++updatedVotes[id];
+        return { votes: updatedVotes };
       });
     };
   }
