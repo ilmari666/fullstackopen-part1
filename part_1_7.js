@@ -15,47 +15,41 @@ const Button = (props) => {
 };
 
 const Header = ({ label }) => <h1>{label}</h1>;
-
 const Choices = ({ choices, choose }) => (<div>
   {choices.map(choice =>
     <Button type="button" onClick={() => choose(choice)} key={choice}>{OPTIONS[choice]}</Button>)}
 </div>);
 
-const getButtonClicks = history =>
-  Object.keys(history).map(key => ({
-    label: OPTIONS[key],
-    value: history[key],
-  }));
+const getHistoryPerButton = history =>
+  Object.keys(history).map(key => <p>{`${OPTIONS[key]} ${history[key]}`}</p>);
 
-const getTotalClicks = history =>
+const getTotalClicks = (history) => 
   Object.keys(history).reduce((accumulator, option) => accumulator + history[option], 0);
 
 const getPositiveClickPct = (history) => {
   const totalClicks = getTotalClicks(history);
-  if (totalClicks === 0) {
-    return 0;
+  if (totalClicks === 0){
+    return null;
   }
   const positiveClicks = history.Good;
   const avgPct = (positiveClicks / totalClicks) * 100;
-  return `${avgPct.toFixed(1)}%`;
+  return <p>positiivisia { avgPct.toFixed(1) } %</p>;
 };
 
 
 const getClickAvg = (history) => {
   const totalClicks = getTotalClicks(history);
-  if (totalClicks === 0) {
-    return 0;
+  if (totalClicks === 0){
+    return null;
   }
   const avgPoints = (history.Good - history.Bad) / totalClicks;
-  return avgPoints.toFixed(1);
+  return <p>keskiarvo { avgPoints.toFixed(1) }</p>;
 };
 
-const Statistic = ({ label, value }) => <p>{ label } { value }</p>;
-
-const Statistics = ({ history }) => (<div>
-  { getButtonClicks(history).map(historySet => <Statistic {...historySet} />) }
-  <Statistic label="keskiarvo" value={getClickAvg(history)} />
-  <Statistic label="positiivisia" value={getPositiveClickPct(history)} />
+const Stats = ({ history }) => (<div>
+  { getHistoryPerButton(history) }
+  { getClickAvg(history)}
+  { getPositiveClickPct(history) }
 </div>);
 
 class App extends Component {
@@ -81,7 +75,7 @@ class App extends Component {
         <Header label="anna palautetta" />
         <Choices choices={Object.keys(OPTIONS)} choose={value => this.onSelect(value)} />
         <Header label="statistiikka" />
-        <Statistics history={history} />
+        <Stats history={history} />
       </div>
     );
   }
