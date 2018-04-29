@@ -1,9 +1,23 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const Button = ({label, onclick}) => <button style={{margin:10}} onClick={onclick}>{label}</button>;
+const Button = ({ label, onclick }) => <button style={{ margin: 10 }} onClick={onclick}>{label}</button>;
 
-const Anecdote = ({text}) => <p>{text}</p>;
+const Anecdote = ({ text }) => <p>{text}</p>;
+
+const MostVotes = ({ votes, anecdotes }) => {
+  const highestVoteCount = Math.max(...votes);
+  if (highestVoteCount === 0) {
+    return null;
+  }
+  const mostPopular = votes.indexOf(highestVoteCount);
+  return (<div>
+    <h1>anecdote with most votes:</h1>
+    <Anecdote text={anecdotes[mostPopular]} />
+    <p>has {highestVoteCount} votes</p>
+  </div>);
+};
+
 class Anecdotes extends React.Component {
   constructor(props) {
     super(props);
@@ -15,33 +29,36 @@ class Anecdotes extends React.Component {
 
   getSelectRandomAnecdote() {
     return () => {
-      this.setState({selected: Math.floor(Math.random() * this.props.anecdotes.length)});
+      this.setState({ selected: Math.floor(Math.random() * this.props.anecdotes.length) });
     };
   }
 
   getVoteAnecdote(id) {
     return () => {
-      this.setState(({votes}) => {
-         ++votes[id];
-        return {votes};
+      this.setState(({ votes }) => {
+        ++votes[id];
+        return { votes };
       });
-    }
+    };
   }
 
 
   render() {
+    const { anecdotes } = this.props;
+    const { selected, votes } = this.state;
     return (
       <div>
-        <Anecdote text={this.props.anecdotes[this.state.selected]} />
+        <Anecdote text={anecdotes[selected]} />
         <br />
         <Button label="next anecdote" onclick={this.getSelectRandomAnecdote()} />
-        <Button label="vote" onclick={this.getVoteAnecdote(this.state.selected)} />
+        <Button label="vote" onclick={this.getVoteAnecdote(selected)} />
+        <MostVotes votes={votes} anecdotes={anecdotes} />
       </div>
     );
   }
 }
 
-const App = ()=> <Anecdotes anecdotes={anecdotes} />;
+const App = () => <Anecdotes anecdotes={anecdotes} />;
 
 const anecdotes = [
   'If it hurts, do it more often',
