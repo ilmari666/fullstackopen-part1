@@ -1,13 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-const Button = ({label, onclick}) => <button onClick={onclick}>{label}</button>;
+const Button = ({label, onclick}) => <button style={{margin:10}} onClick={onclick}>{label}</button>;
 
+const Anecdote = ({text}) => <p>{text}</p>;
 class Anecdotes extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       selected: 0,
+      votes: new Array(this.props.anecdotes.length).fill(0),
     };
   }
 
@@ -17,11 +19,23 @@ class Anecdotes extends React.Component {
     };
   }
 
+  getVoteAnecdote(id) {
+    return () => {
+      this.setState(({votes}) => {
+         ++votes[id];
+        return {votes};
+      });
+    }
+  }
+
+
   render() {
     return (
       <div>
-        <Button label="arvo anekdootti" onclick={this.getSelectRandomAnecdote()} />
-        {this.props.anecdotes[this.state.selected]}
+        <Anecdote text={this.props.anecdotes[this.state.selected]} />
+        <br />
+        <Button label="next anecdote" onclick={this.getSelectRandomAnecdote()} />
+        <Button label="vote" onclick={this.getVoteAnecdote(this.state.selected)} />
       </div>
     );
   }
